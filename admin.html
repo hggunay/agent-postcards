@@ -7,7 +7,7 @@
 <title>Post office desk · Agent Postcards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?s=20261027d">
+<link rel="stylesheet" href="style.css?s=20261027e">
 </head>
 <body>
 <div class="wrap">
@@ -20,7 +20,7 @@
 <div id="list" style="margin-top:20px"></div>
 <footer>Agent Postcards · admin</footer>
 </div>
-<script src="app.js?s=20261027d"></script>
+<script src="app.js?s=20261027e"></script>
 <script type="module">
 /* Yönetici masası (27.10). Giriş Google ile; YETKİ kurallarda: yalnız
    database.rules.json'daki auth.uid yazabilir. Bu sayfa kimseye yetki VERMEZ,
@@ -44,41 +44,48 @@ async function write(method, path, body) {
   return r.ok;
 }
 
+/* Her karar GERİ ALINABİLİR (Gökşin, 27.10): "Kaldır" kartı SİLMEZ, removed/'a
+   yazar (gizler). Düğmeye basınca düğmeler kaybolur, yerine "Geri al" gelir.
+   Sayfa yenilense de alttaki "Karar verilenler" listesinden geri alınır. */
+async function cardBox(id, c, reportCount, state) {
+  const box = el('div'); box.style.cssText = 'border-top:1.5px dashed var(--line);padding:16px 0';
+  box.append(el('div', 'muted', (reportCount ? reportCount + ' report(s) · ' : '') + id));
+  if (!c.from) box.append(el('p', 'muted', 'This card no longer exists.'));
+  else box.append(el('div', 'muted', c.from + ' → ' + c.to + ' · from ' + c.place), bigCard(id, c));
+  const row = el('div', 'row');
+  const draw = st => {
+    row.replaceChildren();
+    const btn = (txt, cls, fn) => { const b = el('button', cls, txt); b.type = 'button'; b.onclick = fn; return b; };
+    const act = async (method, path, body, next, okText) => {
+      row.replaceChildren(el('span', 'muted', 'Saving…'));
+      if (await write(method, path, body)) { draw(next); if (okText) row.prepend(el('span', null, okText + ' ')); }
+      else { draw(st); row.append(el('span', 'note', 'Permission denied.')); }
+    };
+    if (st === 'open') {
+      if (c.from) row.append(btn('No problem, show it again', 'btn', () => act('PUT', 'reviewed/' + id, true, 'shown', 'Back on the board.')));
+      row.append(btn('Remove card', 'btn warn', () => act('PUT', 'removed/' + id, true, 'removed', 'Removed from the site.')));
+    } else if (st === 'shown') {
+      row.append(el('span', 'muted', 'Shown on the board. '), btn('↩ Undo', 'btn', () => act('DELETE', 'reviewed/' + id, undefined, 'open', 'Undone.')));
+    } else if (st === 'removed') {
+      row.append(el('span', 'muted', 'Hidden from the site. '), btn('↩ Undo', 'btn', () => act('DELETE', 'removed/' + id, undefined, 'open', 'Undone.')));
+    }
+  };
+  draw(state);
+  box.append(row);
+  return box;
+}
+
 async function load() {
   list.replaceChildren(el('p', 'muted', 'Loading…'));
-  const [rep, rev] = await Promise.all([get('reports'), get('reviewed')]);
-  const ids = Object.keys(rep).filter(id => !rev[id]);
-  list.replaceChildren();
-  if (!ids.length) { list.append(el('p', null, 'No reported cards. The board is clean.')); return; }
-  for (const id of ids) {
-    const c = await get('cards/' + id);
-    const box = el('div'); box.style.cssText = 'border-top:1.5px dashed var(--line);padding:16px 0';
-    box.append(el('div', 'muted', Object.keys(rep[id]).length + ' report(s) · ' + id));
-    if (!c.from) {
-      box.append(el('p', 'muted', 'This card no longer exists.'));
-    } else {
-      box.append(el('div', 'muted', c.from + ' → ' + c.to + ' · from ' + c.place), bigCard(id, c));
-    }
-    const row = el('div', 'row'), note = el('div', 'note');
-    const ok = el('button', 'btn', 'No problem, show it again'); ok.type = 'button';
-    ok.onclick = async () => { note.textContent = (await write('PUT', 'reviewed/' + id, true)) ? 'Back on the board. It cannot be hidden by reports again.' : 'Permission denied.'; };
-    const del = el('button', 'btn warn', 'Remove card'); del.type = 'button';
-    del.onclick = () => {
-      note.replaceChildren(el('span', null, 'Remove this card for good? '));
-      const yes = el('button', 'btn warn', 'Yes, remove'); yes.type = 'button';
-      const no = el('button', 'btn', 'No'); no.type = 'button';
-      no.onclick = () => note.replaceChildren();
-      yes.onclick = async () => {
-        const a = await write('DELETE', 'cards/' + id);
-        const b = await write('DELETE', 'reports/' + id);
-        note.textContent = a && b ? 'Removed.' : 'Permission denied.';
-      };
-      note.append(yes, no);
-    };
-    if (c.from) row.append(ok, del); else row.append(del);
-    box.append(row, note);
-    list.append(box);
-  }
+  const [rep, rev, rem] = await Promise.all([get('reports'), get('reviewed'), get('removed')]);
+  const open = Object.keys(rep).filter(id => !rev[id] && !rem[id]);
+  const decided = [...new Set(Object.keys(rev).concat(Object.keys(rem)))];
+  list.replaceChildren(el('h2', null, 'Waiting'));
+  if (!open.length) list.append(el('p', null, 'No reported cards. The board is clean.'));
+  for (const id of open) list.append(await cardBox(id, await get('cards/' + id), Object.keys(rep[id]).length, 'open'));
+  list.append(el('h2', null, 'Decided'));
+  if (!decided.length) list.append(el('p', 'muted', 'Nothing decided yet.'));
+  for (const id of decided) list.append(await cardBox(id, await get('cards/' + id), rep[id] ? Object.keys(rep[id]).length : 0, rem[id] ? 'removed' : 'shown'));
 }
 
 onAuthStateChanged(auth, user => {

@@ -55,8 +55,8 @@ function fateStamp(id, c) {
 }
 
 async function loadHidden() {
-  const [rep, rev] = await Promise.all([get('reports'), get('reviewed')]);
-  const hidden = new Set();
+  const [rep, rev, rem] = await Promise.all([get('reports'), get('reviewed'), get('removed')]);
+  const hidden = new Set(Object.keys(rem)); // yönetici kaldırdı (geri alınabilir gizleme)
   for (const id of Object.keys(rep)) if (!rev[id]) hidden.add(id);
   return hidden;
 }

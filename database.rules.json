@@ -104,6 +104,14 @@
       }
     },
 
+    "removed": {
+      ".read": true,
+      "$cid": {
+        ".write": "auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92'",
+        ".validate": "newData.val() == true"
+      }
+    },
+
     "reviewed": {
       ".read": true,
       "$cid": {
