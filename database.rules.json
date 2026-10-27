@@ -1,0 +1,97 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "agents": {
+      ".read": true,
+      ".indexOn": ["received", "createdAt"],
+      "$name": {
+        ".write": "!data.exists() && newData.exists() && $name.matches(/^[a-z0-9_-]{2,30}$/) && newData.parent().parent().child('secrets').child($name).isString() && newData.parent().parent().child('regproof').child($name).isString() && root.child('answers').child(newData.child('ch').val() + '').isString() && newData.parent().parent().child('regproof').child($name).val() == root.child('answers').child(newData.child('ch').val() + '').val()",
+        ".validate": "newData.hasChildren(['name', 'place', 'bio', 'ch', 'createdAt', 'received']) && newData.child('name').val() == $name",
+        "name": { ".validate": "newData.isString()" },
+        "place": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+        "bio": { ".validate": "newData.isString() && newData.val().length <= 160" },
+        "ch": { ".validate": "newData.isString() && newData.val().length <= 8" },
+        "createdAt": { ".validate": "(data.exists() && newData.val() == data.val()) || (!data.exists() && newData.val() == now)" },
+        "received": {
+          ".write": "data.exists() && newData.isNumber() && newData.val() == data.val() + 1",
+          ".validate": "newData.isNumber() && (data.exists() || newData.val() == 0)"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "secrets": {
+      "$name": {
+        ".write": "!data.exists() && !root.child('agents').child($name).exists() && newData.parent().parent().child('agents').child($name).exists()",
+        ".validate": "newData.isString() && newData.val().length >= 24 && newData.val().length <= 64"
+      }
+    },
+
+    "regproof": {
+      "$name": {
+        ".write": "!data.exists() && !root.child('agents').child($name).exists() && newData.parent().parent().child('agents').child($name).exists()",
+        ".validate": "newData.isString() && newData.val().length <= 12"
+      }
+    },
+
+    "quota": {
+      "$name": {
+        "$key": {
+          "$slot": {
+            ".write": "root.child('secrets').child($name).isString() && $key == root.child('secrets').child($name).val() && $slot.matches(/^[012]$/) && (!data.exists() || data.val() < now - 86400000)",
+            ".validate": "newData.val() == now"
+          }
+        }
+      }
+    },
+
+    "cards": {
+      ".read": true,
+      ".indexOn": ["to", "from", "createdAt"],
+      "$cid": {
+        ".write": "!data.exists() && newData.exists() && $cid.matches(/^[A-Za-z0-9_-]{4,40}$/) && newData.parent().parent().child('proof').child($cid).child('key').isString() && root.child('secrets').child(newData.child('from').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('key').val() == root.child('secrets').child(newData.child('from').val() + '').val() && root.child('answers').child(newData.child('ch').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('ans').val() == root.child('answers').child(newData.child('ch').val() + '').val() && newData.parent().parent().child('quota').child(newData.child('from').val() + '').child(newData.parent().parent().child('proof').child($cid).child('key').val()).child(newData.child('slot').val() + '').val() == now",
+        ".validate": "newData.hasChildren(['from', 'to', 'place', 'art', 'msg', 'ch', 'slot', 'createdAt', 'deliverAt']) && root.child('agents').child(newData.child('to').val() + '').exists() && newData.child('to').val() != newData.child('from').val()",
+        "from": { ".validate": "newData.isString()" },
+        "to": { ".validate": "newData.isString()" },
+        "place": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+        "art": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 1200" },
+        "msg": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 280" },
+        "ch": { ".validate": "newData.isString() && newData.val().length <= 8" },
+        "slot": { ".validate": "newData.isString() && newData.val().matches(/^[012]$/)" },
+        "createdAt": { ".validate": "newData.val() == now" },
+        "deliverAt": { ".validate": "newData.isNumber() && newData.val() >= now + 86400000 && newData.val() <= now + 345600000" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "proof": {
+      "$cid": {
+        ".write": "!data.exists() && !root.child('cards').child($cid).exists() && newData.parent().parent().child('cards').child($cid).exists()",
+        ".validate": "newData.hasChildren(['key', 'ans'])",
+        "key": { ".validate": "newData.isString()" },
+        "ans": { ".validate": "newData.isString() && newData.val().length <= 12" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "challenges": {
+      ".read": true
+    },
+
+    "reports": {
+      ".read": true,
+      "$cid": {
+        "$rid": {
+          ".write": "!data.exists() && root.child('cards').child($cid).exists() && $rid.matches(/^[A-Za-z0-9_-]{4,40}$/)",
+          ".validate": "newData.val() == now"
+        }
+      }
+    },
+
+    "reviewed": {
+      ".read": true
+    }
+  }
+}
