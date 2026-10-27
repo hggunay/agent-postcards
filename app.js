@@ -24,7 +24,25 @@ function el(tag, cls, text) {
   return e;
 }
 
-function isDelivered(c) { return !!c && c.deliverAt <= Date.now(); }
+/* Kayıp ve bumerang kartlar (Gökşin'in fikri, 27.10). Sunucu olmadığı için
+   kader kart kimliğinden HESAPLANIR, veritabanında durmaz: her sayfa aynı sonucu
+   bulur, kimse seçemez. ~50 kartta 1 kayıp (2–3 hafta geç gelir, "lost · found"
+   damgası), ~50'de 1 bumerang (alıcıya hiç gitmez, gönderene geri döner).
+   skill.md'deki formül BUNUNLA AYNI kalmalı. */
+function fate(id) { const r = h('fate:' + id) % 50; return r === 0 ? 'lost' : r === 1 ? 'boomerang' : 'normal'; }
+function arriveAt(id, c) {
+  const f = fate(id);
+  if (f === 'lost') return c.deliverAt + (14 + h('late:' + id) % 8) * DAY;
+  if (f === 'boomerang') return c.deliverAt + 2 * DAY;
+  return c.deliverAt;
+}
+// geldi mi (alıcıya ya da bumerangsa gönderene)
+function isDelivered(c, id) { return !!c && arriveAt(id, c) <= Date.now(); }
+function fateStamp(id, c) {
+  if (!isDelivered(c, id)) return null;
+  const f = fate(id);
+  return f === 'lost' ? 'LOST · FOUND' : f === 'boomerang' ? 'RETURN TO SENDER' : null;
+}
 
 async function loadHidden() {
   const [rep, rev] = await Promise.all([get('reports'), get('reviewed')]);
@@ -44,6 +62,8 @@ function smallCard(id, c, onOpen, opts = {}) {
   if (opts.tilt !== false) b.style.transform = 'rotate(' + ((k % 11) - 5) * 0.9 + 'deg)';
   if (opts.pin) { const p = el('span', 'pin'); p.style.background = PINS[k % PINS.length]; b.append(p); }
   if (opts.peg) b.append(el('span', 'peg'));
+  const st = fateStamp(id, c);
+  if (st) b.append(el('span', 'fate-stamp', st));
   b.append(el('pre', null, c.art), el('span', 'place', 'from ' + c.place));
   b.addEventListener('click', () => onOpen(id, c));
   return b;
@@ -60,6 +80,8 @@ function bigCard(id, c) {
   const foot = el('div'); foot.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-end;gap:8px';
   foot.append(el('span', 'pname', c.place), el('span', 'muted', 'tap to turn ↻'));
   front.append(el('pre', null, c.art), foot);
+  const st = fateStamp(id, c);
+  if (st) front.append(el('span', 'fate-stamp', st));
   const back = el('div', 'back');
   const msg = el('div', 'msg');
   msg.append(el('div', 'msgtext', c.msg));
@@ -79,9 +101,13 @@ function credit(c) { return el('div', 'credit', c.place + ' · Agent Postcards �
 
 // takip durakları
 function stops(id, c) {
-  const now = Date.now(), span = c.deliverAt - c.createdAt, t = (now - c.createdAt) / span;
-  const step = t >= 1 ? 4 : t > 0.85 ? 3 : t > 0.2 ? 2 : t > 0.03 ? 1 : 0;
-  const labels = ['Posted in ' + c.place, 'Being sorted', 'On the way, ' + TRAVEL[h(id) % TRAVEL.length], 'At the arrival post office', 'Delivered to ' + c.to];
+  const now = Date.now(), f = fate(id), t = (now - c.createdAt) / (c.deliverAt - c.createdAt);
+  // normal: 4. durak teslim anı; kayıp/bumerang: deliverAt'te 4. durak (kayıp / adres karıştı), arriveAt'te 5.
+  let step = t > 0.85 ? 3 : t > 0.2 ? 2 : t > 0.03 ? 1 : 0;
+  if (f === 'normal' ? t >= 1 : now >= arriveAt(id, c)) step = 4;
+  const fourth = f === 'lost' ? 'Lost somewhere along the way…' : f === 'boomerang' ? 'Address mix-up at the post office' : 'At the arrival post office';
+  const last = f === 'lost' ? 'Found! Delivered to ' + c.to + ', very late' : f === 'boomerang' ? 'Returned to ' + c.from : 'Delivered to ' + c.to;
+  const labels = ['Posted in ' + c.place, 'Being sorted', 'On the way, ' + TRAVEL[h(id) % TRAVEL.length], fourth, last];
   const wrap = el('div', 'stops');
   labels.forEach((L, i) => {
     const s = el('div', 'stop ' + (i < step ? 'done' : i === step ? 'now' : 'later'));

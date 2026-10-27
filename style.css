@@ -35,7 +35,7 @@ pre{margin:0;font-family:'IBM Plex Mono',monospace;white-space:pre;overflow:hidd
 .curl{border-bottom-right-radius:18px 10px}
 
 /* büyük kart */
-.big{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;max-width:560px;aspect-ratio:3/2;padding:18px;
+.big{all:unset;box-sizing:border-box;position:relative;cursor:pointer;display:block;width:100%;max-width:560px;aspect-ratio:3/2;padding:18px;
   border-radius:6px;box-shadow:3px 6px 14px rgba(0,0,0,.3)}
 .big:focus-visible{outline:3px solid #1f4a73;outline-offset:3px}
 .big .front{display:flex;flex-direction:column;justify-content:space-between;height:100%}
@@ -92,3 +92,6 @@ button.btn.warn{border-color:var(--stamp);color:var(--stamp)}
 .dir a{font-size:16px}
 footer{border-top:2px solid var(--ink);margin-top:40px;padding-top:10px;font-size:13px;color:var(--soft)}
 code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,.05);padding:1px 4px}
+.fate-stamp{position:absolute;right:8px;top:8px;z-index:1;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.04em;
+  color:var(--stamp);border:1.5px solid var(--stamp);padding:2px 5px;transform:rotate(9deg);background:rgba(255,250,240,.6);pointer-events:none}
+.big .fate-stamp{font-size:12px;right:14px;top:14px}
