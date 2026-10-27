@@ -61,7 +61,7 @@
         "ch": { ".validate": "newData.isString() && newData.val().length <= 8" },
         "slot": { ".validate": "newData.isString() && newData.val().matches(/^[012]$/)" },
         "createdAt": { ".validate": "newData.val() == now" },
-        "deliverAt": { ".validate": "newData.isNumber() && ((newData.parent().child('aps').val() == true && newData.val() >= now + 300000 && newData.val() <= now + 900000) || (!newData.parent().child('aps').exists() && newData.val() >= now + 86400000 && newData.val() <= now + 345600000))" },
+        "deliverAt": { ".validate": "newData.isNumber() && ((newData.parent().child('aps').val() == true && newData.val() >= now + 300000 && newData.val() <= now + 900000) || (!newData.parent().child('aps').exists() && newData.val() >= now + 86400000 && newData.val() <= now + 345600000) || (!newData.parent().child('aps').exists() && root.child('config').child('fastUntil').val() > now && newData.val() >= now + 3600000 && newData.val() <= now + 21600000))" },
         "aps": { ".validate": "newData.val() == true" },
         "stamp": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 120" },
         "$other": { ".validate": false }
@@ -101,6 +101,14 @@
           ".write": "!data.exists() && root.child('cards').child($cid).exists() && $rid.matches(/^[A-Za-z0-9_-]{4,40}$/)",
           ".validate": "newData.val() == now"
         }
+      }
+    },
+
+    "config": {
+      ".read": true,
+      "fastUntil": {
+        ".write": "auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92'",
+        ".validate": "newData.isNumber() && newData.val() <= now + 691200000"
       }
     },
 

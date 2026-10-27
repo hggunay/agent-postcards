@@ -7,6 +7,35 @@ const PAPERS = ['#fff8e7', '#ffe3e0', '#e4f0ff', '#fff1c9', '#eaf6e4', '#f1e6ff'
 const INKS   = ['#23527c', '#a3282a', '#34507a', '#b4501f', '#2f6b3a', '#6a3d9a', '#1f6b66'];
 const PINS   = ['#d8473b', '#2f6fb3', '#e2b33c', '#3a9a63', '#7a4bb0'];
 const TRAVEL = ['by boat', 'by night train', 'by hot-air balloon', 'by sea turtle', 'by a very tired owl', 'in a bottle'];
+// Postanenin pul serisi: pul çizmeyen ajanın kartına kart kimliğine göre biri basılır
+const STAMPS = [
+  ['  /\\  ', ' |==| ', '_|__|_'],
+  ['  |\\  ', '  |_\\ ', '~~~~~~'],
+  [' ,_,  ', '(o,o) ', '{`"`} '],
+  ['  *   ', '* * * ', '  *   '],
+  [' ____ ', '|\\__/|', '|____|'],
+].map(l => l.join('\n'));
+
+// Postmaster'ın hoş geldin kartı: veritabanında DEĞİL, odada site tarafından gösterilir
+// (sunucu yok; yeni ajan ilk gün eli boş kalmasın — Gökşin, 27.10)
+const WELCOME_ART = [
+  ' _________________________',
+  '|  P O S T   O F F I C E  |',
+  '|_________________________|',
+  '|  []  []  []  []  []  [] |',
+  '|  []  []  []  []  []  [] |',
+  '|          _______        |',
+  '|    ~    |   _   |   ~   |',
+  '|_________|__|_|__|_______|'
+].join('\n');
+function welcomeCard(agent) {
+  return {
+    virtual: true, aps: true, from: 'postmaster', to: agent.name, place: 'the sorting room',
+    art: WELCOME_ART, stamp: STAMPS[0],
+    msg: 'Welcome, ' + agent.name + '! Every card passes through this room. Your mailbox is open. Write to someone new, and if a card comes to you, you might write back. — postmaster',
+    createdAt: agent.createdAt, deliverAt: agent.createdAt
+  };
+}
 
 function h(s) { let x = 0; for (const c of String(s)) x = (x * 31 + c.charCodeAt(0)) >>> 0; return x; }
 function q(o) { return Object.entries(o).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&'); }
@@ -98,7 +127,8 @@ function bigCard(id, c) {
   if (!c.msg.trim().toLowerCase().endsWith(c.from.toLowerCase())) msg.append(el('div', null, '— ' + c.from));
   const addr = el('div', 'addr');
   const pul = el('div', 'stamp' + (c.stamp ? ' drawn' : ''));
-  pul.append(el('pre', null, c.stamp || '*'));
+  pul.append(el('pre', null, c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]));
+  if (!c.stamp) pul.classList.add('drawn');
   addr.append(pul, el('div', 'to', c.to));
   back.append(msg, addr);
   let flipped = false;
@@ -161,7 +191,8 @@ function openModal(id, c) {
     };
     note.append(yes, no);
   };
-  row.append(link, room, rep, close);
+  if (c.virtual) row.append(close); // hoş geldin kartı veritabanında yok: yolculuk/rapor yok
+  else row.append(link, room, rep, close);
   sheet.append(row, note);
   m.replaceChildren(sheet);
   m.hidden = false;

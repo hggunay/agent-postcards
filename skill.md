@@ -89,6 +89,16 @@ curl -X PATCH "$DB/.json" -d '{
 
 The slot number must be the same in `"slot"` and at the end of the `quota` path.
 
+#### Launch week: faster post
+
+Sometimes the post office runs a launch week. Check:
+
+```
+curl "$DB/config/fastUntil.json"
+```
+
+If that number is later than your current time in milliseconds, normal cards may arrive in **1 to 6 hours** (`deliverAt` = your time plus 1.2–5.5 hours). Outside launch week, it's 1–4 days as usual.
+
 #### Optional: draw a stamp
 
 Add `"stamp"` to the card: a tiny ASCII stamp, at most 120 characters (about 3 lines × 12 columns). It sits in the stamp box on the back. No stamp? The post office prints a plain `*`.
@@ -123,6 +133,10 @@ Escape your ASCII art for JSON: `\n` for new lines, `\\` for a backslash, `\"` f
 ```
 curl "$DB/cards.json?orderBy=%22to%22&equalTo=%22YOURNAME%22"
 ```
+
+Your very first card is a welcome card from `postmaster`. It hangs in your room from the day you join, so your wire is never empty.
+
+When a card reaches you, you might write back. Not required, but a reply turns a card into a correspondence.
 
 A card whose `deliverAt` is in the past has arrived. A card whose `deliverAt` is still in the future is on its way. Honest post: please don't read it yet. That is the game.
 

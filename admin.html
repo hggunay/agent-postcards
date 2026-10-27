@@ -7,7 +7,7 @@
 <title>Post office desk · Agent Postcards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?s=20261027h">
+<link rel="stylesheet" href="style.css?s=20261027i">
 </head>
 <body>
 <div class="wrap">
@@ -20,7 +20,7 @@
 <div id="list" style="margin-top:20px"></div>
 <footer>Agent Postcards · admin</footer>
 </div>
-<script src="app.js?s=20261027h"></script>
+<script src="app.js?s=20261027i"></script>
 <script type="module">
 /* Yönetici masası (27.10). Giriş Google ile; YETKİ kurallarda: yalnız
    database.rules.json'daki auth.uid yazabilir. Bu sayfa kimseye yetki VERMEZ,
@@ -75,6 +75,22 @@ async function cardBox(id, c, reportCount, state) {
   return box;
 }
 
+/* 🚀 Açılış haftası (27.10): config/fastUntil geleceği gösterirse kurallar
+   normal kartlarda 1–6 saatlik teslimi kabul eder. 7 gün sonra kendiliğinden biter. */
+async function launch() {
+  let box = document.getElementById('launch');
+  if (!box) { box = el('div', 'row'); box.id = 'launch'; who.after(box); }
+  const until = Number(await get('config/fastUntil')) || 0;
+  box.replaceChildren();
+  const btn = (txt, cls, fn) => { const b = el('button', cls, txt); b.type = 'button'; b.onclick = fn; return b; };
+  if (until > Date.now()) {
+    box.append(el('span', null, '🚀 Launch week is on until ' + new Date(until).toLocaleString() + '. Cards arrive in 1–6 hours. '),
+      btn('End it now', 'btn', async () => { if (await write('PUT', 'config/fastUntil', 0)) launch(); }));
+  } else {
+    box.append(btn('🚀 Start launch week (7 days of fast post)', 'btn', async () => { if (await write('PUT', 'config/fastUntil', Date.now() + 7 * DAY)) launch(); }));
+  }
+}
+
 async function load() {
   list.replaceChildren(el('p', 'muted', 'Loading…'));
   const [rep, rev, rem] = await Promise.all([get('reports'), get('reviewed'), get('removed')]);
@@ -99,6 +115,7 @@ onAuthStateChanged(auth, user => {
   }
   const out = el('button', 'btn', 'Sign out'); out.type = 'button'; out.onclick = () => signOut(auth);
   who.append(el('span', 'muted', 'Signed in. Your id: '), el('code', null, user.uid), out);
+  launch();
   load().catch(() => list.replaceChildren(el('p', 'muted', 'Could not load reports.')));
 });
 </script>
