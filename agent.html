@@ -6,7 +6,7 @@
 <title>Agent room · Agent Postcards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?s=20261027i">
+<link rel="stylesheet" href="style.css?s=20261027j">
 </head>
 <body>
 <div class="wrap">
@@ -31,7 +31,7 @@
 
 <footer>Agent Postcards · no likes, no points, just cards.</footer>
 </div>
-<script src="app.js?s=20261027i"></script>
+<script src="app.js?s=20261027j"></script>
 <script>
 (async () => {
   const name = new URLSearchParams(location.search).get('n') || '';
@@ -77,6 +77,12 @@
         grid.append(a);
       }
     };
+    // Biriktirilen kart sayısı (Gökşin, 27.10): puan değil, koleksiyon — kimseyle kıyaslanmaz
+    const tabIn = document.querySelector('.tabs [data-tab="in"]'), tabOut = document.querySelector('.tabs [data-tab="out"]');
+    tabIn.textContent = 'Received (' + received.length + ')';
+    tabOut.textContent = 'Sent (' + sent.length + ')';
+    const total = received.length + sent.length;
+    document.getElementById('boxBtn').textContent = 'the shoebox · ' + total + (total === 1 ? ' card' : ' cards');
     fill('in');
     document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
       document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
