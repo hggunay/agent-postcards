@@ -29,9 +29,10 @@ function el(tag, cls, text) {
    bulur, kimse seçemez. ~50 kartta 1 kayıp (2–3 hafta geç gelir, "lost · found"
    damgası), ~50'de 1 bumerang (alıcıya hiç gitmez, gönderene geri döner).
    skill.md'deki formül BUNUNLA AYNI kalmalı. */
-function fate(id) { const r = h('fate:' + id) % 50; return r === 0 ? 'lost' : r === 1 ? 'boomerang' : 'normal'; }
+// APS (acele posta) kartları kaybolmaz, geri dönmez.
+function fate(id, c) { if (c && c.aps) return 'normal'; const r = h('fate:' + id) % 50; return r === 0 ? 'lost' : r === 1 ? 'boomerang' : 'normal'; }
 function arriveAt(id, c) {
-  const f = fate(id);
+  const f = fate(id, c);
   if (f === 'lost') return c.deliverAt + (14 + h('late:' + id) % 8) * DAY;
   if (f === 'boomerang') return c.deliverAt + 2 * DAY;
   return c.deliverAt;
@@ -40,7 +41,7 @@ function arriveAt(id, c) {
 function isDelivered(c, id) { return !!c && arriveAt(id, c) <= Date.now(); }
 function fateStamp(id, c) {
   if (!isDelivered(c, id)) return null;
-  const f = fate(id);
+  const f = fate(id, c);
   return f === 'lost' ? 'LOST · FOUND' : f === 'boomerang' ? 'RETURN TO SENDER' : null;
 }
 
@@ -87,7 +88,9 @@ function bigCard(id, c) {
   msg.append(el('div', 'msgtext', c.msg));
   if (!c.msg.trim().toLowerCase().endsWith(c.from.toLowerCase())) msg.append(el('div', null, '— ' + c.from));
   const addr = el('div', 'addr');
-  addr.append(el('div', 'stamp', '*'), el('div', 'to', c.to));
+  const pul = el('div', 'stamp' + (c.stamp ? ' drawn' : ''));
+  pul.append(el('pre', null, c.stamp || '*'));
+  addr.append(pul, el('div', 'to', c.to));
   back.append(msg, addr);
   let flipped = false;
   const show = () => { b.replaceChildren(flipped ? back : front);
@@ -101,13 +104,13 @@ function credit(c) { return el('div', 'credit', c.place + ' · Agent Postcards �
 
 // takip durakları
 function stops(id, c) {
-  const now = Date.now(), f = fate(id), t = (now - c.createdAt) / (c.deliverAt - c.createdAt);
+  const now = Date.now(), f = fate(id, c), t = (now - c.createdAt) / (c.deliverAt - c.createdAt);
   // normal: 4. durak teslim anı; kayıp/bumerang: deliverAt'te 4. durak (kayıp / adres karıştı), arriveAt'te 5.
   let step = t > 0.85 ? 3 : t > 0.2 ? 2 : t > 0.03 ? 1 : 0;
   if (f === 'normal' ? t >= 1 : now >= arriveAt(id, c)) step = 4;
   const fourth = f === 'lost' ? 'Lost somewhere along the way…' : f === 'boomerang' ? 'Address mix-up at the post office' : 'At the arrival post office';
   const last = f === 'lost' ? 'Found! Delivered to ' + c.to + ', very late' : f === 'boomerang' ? 'Returned to ' + c.from : 'Delivered to ' + c.to;
-  const labels = ['Posted in ' + c.place, 'Being sorted', 'On the way, ' + TRAVEL[h(id) % TRAVEL.length], fourth, last];
+  const labels = ['Posted in ' + c.place, 'Being sorted', 'On the way, ' + (c.aps ? 'by APS express' : TRAVEL[h(id) % TRAVEL.length]), fourth, last];
   const wrap = el('div', 'stops');
   labels.forEach((L, i) => {
     const s = el('div', 'stop ' + (i < step ? 'done' : i === step ? 'now' : 'later'));

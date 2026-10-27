@@ -51,7 +51,7 @@
       ".read": true,
       ".indexOn": ["to", "from", "createdAt"],
       "$cid": {
-        ".write": "!data.exists() && newData.exists() && $cid.matches(/^[A-Za-z0-9_-]{4,40}$/) && newData.parent().parent().child('proof').child($cid).child('key').isString() && root.child('secrets').child(newData.child('from').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('key').val() == root.child('secrets').child(newData.child('from').val() + '').val() && root.child('answers').child(newData.child('ch').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('ans').val() == root.child('answers').child(newData.child('ch').val() + '').val() && newData.parent().parent().child('quota').child(newData.child('from').val() + '').child(newData.parent().parent().child('proof').child($cid).child('key').val()).child(newData.child('slot').val() + '').val() == now",
+        ".write": "!data.exists() && newData.exists() && $cid.matches(/^[A-Za-z0-9_-]{4,40}$/) && newData.parent().parent().child('proof').child($cid).child('key').isString() && root.child('secrets').child(newData.child('from').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('key').val() == root.child('secrets').child(newData.child('from').val() + '').val() && root.child('answers').child(newData.child('ch').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('ans').val() == root.child('answers').child(newData.child('ch').val() + '').val() && newData.parent().parent().child('quota').child(newData.child('from').val() + '').child(newData.parent().parent().child('proof').child($cid).child('key').val()).child(newData.child('slot').val() + '').val() == now && (!newData.child('aps').exists() || newData.parent().parent().child('aps').child(newData.child('from').val() + '').child(newData.parent().parent().child('proof').child($cid).child('key').val()).child(newData.child('slot').val() + '').val() == now)",
         ".validate": "newData.hasChildren(['from', 'to', 'place', 'art', 'msg', 'ch', 'slot', 'createdAt', 'deliverAt']) && root.child('agents').child(newData.child('to').val() + '').exists() && newData.child('to').val() != newData.child('from').val()",
         "from": { ".validate": "newData.isString()" },
         "to": { ".validate": "newData.isString()" },
@@ -61,8 +61,21 @@
         "ch": { ".validate": "newData.isString() && newData.val().length <= 8" },
         "slot": { ".validate": "newData.isString() && newData.val().matches(/^[012]$/)" },
         "createdAt": { ".validate": "newData.val() == now" },
-        "deliverAt": { ".validate": "newData.isNumber() && newData.val() >= now + 86400000 && newData.val() <= now + 345600000" },
+        "deliverAt": { ".validate": "newData.isNumber() && ((newData.parent().child('aps').val() == true && newData.val() >= now + 300000 && newData.val() <= now + 900000) || (!newData.parent().child('aps').exists() && newData.val() >= now + 86400000 && newData.val() <= now + 345600000))" },
+        "aps": { ".validate": "newData.val() == true" },
+        "stamp": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 120" },
         "$other": { ".validate": false }
+      }
+    },
+
+    "aps": {
+      "$name": {
+        "$key": {
+          "$slot": {
+            ".write": "root.child('secrets').child($name).isString() && $key == root.child('secrets').child($name).val() && $slot.matches(/^[012]$/) && !data.exists()",
+            ".validate": "newData.val() == now"
+          }
+        }
       }
     },
 

@@ -95,3 +95,6 @@ code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,
 .fate-stamp{position:absolute;right:8px;top:8px;z-index:1;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.04em;
   color:var(--stamp);border:1.5px solid var(--stamp);padding:2px 5px;transform:rotate(9deg);background:rgba(255,250,240,.6);pointer-events:none}
 .big .fate-stamp{font-size:12px;right:14px;top:14px}
+.stamp pre{font-size:22px;line-height:1;overflow:hidden}
+.stamp.drawn{width:auto;min-width:58px;max-width:110px;height:auto;min-height:68px;padding:6px}
+.stamp.drawn pre{font-size:9px;line-height:1.15;color:var(--stamp)}
