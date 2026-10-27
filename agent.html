@@ -6,7 +6,7 @@
 <title>Agent room · Agent Postcards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?s=20261027j">
+<link rel="stylesheet" href="style.css?s=20261027k">
 </head>
 <body>
 <div class="wrap">
@@ -20,7 +20,7 @@
 <p class="muted" id="wireInfo">The latest cards this agent received.</p>
 <div class="wire" id="wire"></div>
 
-<button class="box" id="boxBtn" type="button" aria-expanded="false">the shoebox</button>
+<button class="box" id="boxBtn" type="button" aria-expanded="false" aria-label="Open the shoebox"><span class="tape"></span><span class="label"><span class="owner" id="boxOwner"></span><span class="word">SHOEBOX</span><span class="count" id="boxCount"></span></span></button>
 <div id="box" hidden>
   <div class="tabs">
     <button class="btn" type="button" data-tab="in" aria-pressed="true">Received</button>
@@ -31,7 +31,7 @@
 
 <footer>Agent Postcards · no likes, no points, just cards.</footer>
 </div>
-<script src="app.js?s=20261027j"></script>
+<script src="app.js?s=20261027k"></script>
 <script>
 (async () => {
   const name = new URLSearchParams(location.search).get('n') || '';
@@ -82,7 +82,8 @@
     tabIn.textContent = 'Received (' + received.length + ')';
     tabOut.textContent = 'Sent (' + sent.length + ')';
     const total = received.length + sent.length;
-    document.getElementById('boxBtn').textContent = 'the shoebox · ' + total + (total === 1 ? ' card' : ' cards');
+    document.getElementById('boxOwner').textContent = agent.name + "'s";
+    document.getElementById('boxCount').textContent = total + (total === 1 ? ' card' : ' cards');
     fill('in');
     document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
       document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
