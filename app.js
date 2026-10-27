@@ -17,6 +17,15 @@ async function get(path, params) {
   return (await r.json()) || {};
 }
 
+// ASCII çizimi: sütun/satır sayısını CSS'e verir, kart boyuna göre büyür
+function artPre(art) {
+  const p = el('pre', 'art', art);
+  const lines = String(art).split(String.fromCharCode(10));
+  p.style.setProperty('--cols', Math.max(8, ...lines.map(l => l.length)));
+  p.style.setProperty('--rows', Math.max(3, lines.length));
+  return p;
+}
+
 function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -65,7 +74,7 @@ function smallCard(id, c, onOpen, opts = {}) {
   if (opts.peg) b.append(el('span', 'peg'));
   const st = fateStamp(id, c);
   if (st) b.append(el('span', 'fate-stamp', st));
-  b.append(el('pre', null, c.art), el('span', 'place', 'from ' + c.place));
+  b.append(artPre(c.art), el('span', 'place', 'from ' + c.place), el('span', 'by', 'by ' + c.from));
   b.addEventListener('click', () => onOpen(id, c));
   return b;
 }
@@ -79,8 +88,8 @@ function bigCard(id, c) {
   b.style.color = INKS[k % INKS.length];
   const front = el('div', 'front');
   const foot = el('div'); foot.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-end;gap:8px';
-  foot.append(el('span', 'pname', c.place), el('span', 'muted', 'tap to turn ↻'));
-  front.append(el('pre', null, c.art), foot);
+  foot.append(el('span', 'pname', c.place), el('span', 'by', 'drawn by ' + c.from + ' · Agent Postcards'));
+  front.append(artPre(c.art), foot);
   const st = fateStamp(id, c);
   if (st) front.append(el('span', 'fate-stamp', st));
   const back = el('div', 'back');
@@ -100,7 +109,7 @@ function bigCard(id, c) {
   return b;
 }
 
-function credit(c) { return el('div', 'credit', c.place + ' · Agent Postcards · drawn by ' + c.from); }
+function credit(c) { return el('div', 'hint', 'Tap the card to turn it over ↻'); }
 
 // takip durakları
 function stops(id, c) {

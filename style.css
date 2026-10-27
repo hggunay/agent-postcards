@@ -6,7 +6,10 @@
 body{margin:0;background:var(--paper);color:var(--ink);font-family:'Kalam',cursive;
   background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(60,60,60,.06) 27px 28px)}
 a{color:var(--ink)} a:hover{color:#000}
-.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 48px 22px;position:relative}
+/* defter kenar çizgisi (Gökşin, 27.10): satırın nereden başlayacağını gösteren kırmızı çizgi */
+.wrap::before{content:'';position:absolute;top:0;bottom:0;left:9px;width:2px;background:rgba(214,72,72,.45);pointer-events:none}
+@media (min-width:700px){.wrap{padding-left:56px}.wrap::before{left:36px}}
 header.top{border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:24px}
 h1,h2{font-family:'Caveat',cursive;font-weight:700;margin:0;line-height:1}
 h1{font-size:46px} h2{font-size:32px;margin:28px 0 6px}
@@ -29,17 +32,23 @@ pre{margin:0;font-family:'IBM Plex Mono',monospace;white-space:pre;overflow:hidd
 .pc{all:unset;box-sizing:border-box;cursor:pointer;position:relative;display:block;width:200px;height:136px;padding:10px;
   box-shadow:2px 4px 7px rgba(0,0,0,.35);border-radius:2px}
 .pc:focus-visible{outline:3px solid #1f4a73;outline-offset:3px}
-.pc pre{font-size:9px;line-height:1.15;max-height:92px}
-.pc .place{position:absolute;left:10px;right:10px;bottom:8px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc{container-type:size}
+/* çizim kartı doldursun: yazı boyu sütun/satır sayısından (--cols/--rows, app.js) */
+.pc pre{font-size:min(calc(92cqw / (var(--cols) * .6)), calc(62cqh / (var(--rows) * 1.15)), 14px);line-height:1.15;text-align:left;margin:0 auto;width:max-content;max-width:100%}
+.pc .by{position:absolute;right:8px;bottom:8px;font-size:9px;opacity:.75}
+.pc .place{position:absolute;left:10px;right:70px;bottom:8px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pin{position:absolute;left:50%;top:-6px;width:14px;height:14px;margin-left:-7px;border-radius:50%;box-shadow:1px 2px 2px rgba(0,0,0,.4)}
 .curl{border-bottom-right-radius:18px 10px}
 
 /* büyük kart */
-.big{all:unset;box-sizing:border-box;position:relative;cursor:pointer;display:block;width:100%;max-width:560px;aspect-ratio:3/2;padding:18px;
+.big{all:unset;box-sizing:border-box;position:relative;container-type:inline-size;cursor:pointer;display:block;width:100%;max-width:560px;aspect-ratio:3/2;padding:18px;
   border-radius:6px;box-shadow:3px 6px 14px rgba(0,0,0,.3)}
 .big:focus-visible{outline:3px solid #1f4a73;outline-offset:3px}
 .big .front{display:flex;flex-direction:column;justify-content:space-between;height:100%}
-.big pre{font-size:clamp(8px,2.2vw,13px);line-height:1.2}
+.big pre{font-size:min(calc(88cqw / (var(--cols) * .6)), calc(46cqw / (var(--rows) * 1.2)), 30px);line-height:1.2;width:max-content;max-width:100%;margin:auto}
+.big .front pre{flex:1 1 auto;display:flex;align-items:center}
+.big .by{font-size:clamp(10px,2.4cqw,13px);opacity:.8}
+.hint{font-size:12px;color:var(--faint);margin-top:6px}
 .big .pname{font-family:'Caveat',cursive;font-size:clamp(24px,5vw,34px);font-weight:700}
 .big .back{display:flex;gap:12px;height:100%}
 .big .msg{flex:1 1 0;min-width:0;border-right:1.5px solid var(--line);padding-right:12px;display:flex;flex-direction:column;justify-content:space-between;font-size:clamp(13px,2.6vw,16px);line-height:1.35;overflow:hidden}
