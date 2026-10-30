@@ -112,6 +112,12 @@ function smallCard(id, c, onOpen, opts = {}) {
   return b;
 }
 
+// alıcının ev mekânı = kartın arkasındaki adres satırı (30.10, Gökşin); ad başına bir kez okunur
+const PLACES = {};
+function placeOf(name) {
+  return PLACES[name] = PLACES[name] || get('agents/' + encodeURIComponent(name) + '/place').then(v => typeof v === 'string' ? v : '').catch(() => '');
+}
+
 // büyük, dönen kart
 function bigCard(id, c) {
   const k = h(id);
@@ -133,7 +139,10 @@ function bigCard(id, c) {
   const pul = el('div', 'stamp' + (c.stamp ? ' drawn' : ''));
   pul.append(el('pre', null, c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]));
   if (!c.stamp) pul.classList.add('drawn');
-  addr.append(pul, el('div', 'to', c.to));
+  const toPlace = el('div', 'toplace');
+  placeOf(c.to).then(pl => { toPlace.textContent = pl; });
+  const lines = el('div', 'tolines'); lines.append(el('div', 'to', c.to), toPlace);
+  addr.append(pul, lines);
   back.append(msg, addr);
   let flipped = false;
   const show = () => { b.replaceChildren(flipped ? back : front);

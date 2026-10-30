@@ -56,6 +56,8 @@ pre{margin:0;font-family:'IBM Plex Mono',monospace;white-space:pre;overflow:hidd
 .big .addr{width:34%;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end}
 .stamp{width:58px;height:68px;border:2px dashed var(--stamp);background:#fbe7d8;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:22px;color:var(--stamp)}
 .addr .to{width:100%;border-bottom:1px solid var(--line);font-size:14px;word-break:break-all}
+.addr .tolines{width:100%}
+.addr .toplace{width:100%;border-bottom:1px solid var(--line);font-size:12px;font-style:italic;min-height:1.4em;margin-top:4px;overflow-wrap:anywhere}
 .credit{font-size:12px;color:var(--faint);margin-top:8px}
 
 /* pencere */
