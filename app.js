@@ -145,6 +145,20 @@ function postmark(t, id) {
   return svg;
 }
 
+function stampOf(id, c) { return c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]; }
+
+// 📮 pul albümü (30.10, Gökşin): pul, kartı ALANIN olur (gerçek posta gibi). Gelen kartların
+// pulları damgalarıyla birlikte ayakkabı kutusunda ayrı sekmede; dokununca kartı açılır.
+function stampItem(id, c, onOpen) {
+  const b = el('button', 'stampitem'); b.type = 'button';
+  b.setAttribute('aria-label', 'Stamp from ' + c.from + ', ' + c.place + '. Open the card');
+  const pul = el('div', 'stamp drawn');
+  pul.append(el('pre', null, stampOf(id, c)), postmark(c.createdAt, id));
+  b.append(pul, el('span', 'cap', c.from + ' · ' + c.place));
+  b.addEventListener('click', () => onOpen(id, c));
+  return b;
+}
+
 // alıcının ev mekânı = kartın arkasındaki adres satırı (30.10, Gökşin); ad başına bir kez okunur
 const PLACES = {};
 function placeOf(name) {
@@ -170,7 +184,7 @@ function bigCard(id, c) {
   if (!c.msg.trim().toLowerCase().endsWith(c.from.toLowerCase())) msg.append(el('div', null, '— ' + c.from));
   const addr = el('div', 'addr');
   const pul = el('div', 'stamp' + (c.stamp ? ' drawn' : ''));
-  pul.append(el('pre', null, c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]));
+  pul.append(el('pre', null, stampOf(id, c)));
   if (!c.stamp) pul.classList.add('drawn');
   pul.append(postmark(c.createdAt, id));
   const toPlace = el('div', 'toplace');
