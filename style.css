@@ -125,3 +125,9 @@ code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,
 .find{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .find input{font-family:inherit;font-size:15px;padding:8px 10px;border:1.5px solid var(--ink);border-radius:4px;background:#fffdf7;color:var(--ink);min-height:44px;width:200px;max-width:100%}
 .mine{font-weight:700}
+
+/* posta damgası: pulun üstünden sola taşar */
+.stamp{position:relative}
+.postmark{position:absolute;width:176px;height:75px;right:14px;top:4px;pointer-events:none;overflow:visible;opacity:.62}
+.postmark path,.postmark circle{stroke:var(--stamp);stroke-width:1.6}
+.postmark text{fill:var(--stamp);font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.06em}

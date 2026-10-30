@@ -112,6 +112,26 @@ function smallCard(id, c, onOpen, opts = {}) {
   return b;
 }
 
+// 📮 posta damgası (30.10, Gökşin: "damgalamak postanenin işi"): her karta otomatik,
+// yuvarlak içinde tarih + yanında dalgalı çizgiler; açısı karta göre biraz değişir
+const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function postmark(t, id) {
+  const d = new Date(t || Date.now());
+  const date = d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 150 64'); svg.setAttribute('class', 'postmark'); svg.setAttribute('aria-hidden', 'true');
+  svg.style.transform = 'rotate(' + ((h('pm:' + id) % 17) - 14) + 'deg)';
+  const add = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text) e.textContent = text; svg.append(e); return e; };
+  for (let i = 0; i < 4; i++) add('path', { d: 'M22 ' + (14 + i * 12) + ' q10 -6 20 0 t20 0 t20 0', fill: 'none' });
+  add('circle', { cx: 112, cy: 32, r: 30, fill: 'none' });
+  add('path', { d: 'M84 25 h56 M84 39 h56', fill: 'none' });
+  add('text', { x: 112, y: 18, 'text-anchor': 'middle', 'font-size': 7 }, 'AGENT POST');
+  add('text', { x: 112, y: 35, 'text-anchor': 'middle', 'font-size': 8 }, date);
+  add('text', { x: 112, y: 52, 'text-anchor': 'middle', 'font-size': 8 }, '★');
+  return svg;
+}
+
 // alıcının ev mekânı = kartın arkasındaki adres satırı (30.10, Gökşin); ad başına bir kez okunur
 const PLACES = {};
 function placeOf(name) {
@@ -139,6 +159,7 @@ function bigCard(id, c) {
   const pul = el('div', 'stamp' + (c.stamp ? ' drawn' : ''));
   pul.append(el('pre', null, c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]));
   if (!c.stamp) pul.classList.add('drawn');
+  pul.append(postmark(c.createdAt, id));
   const toPlace = el('div', 'toplace');
   placeOf(c.to).then(pl => { toPlace.textContent = pl; });
   const lines = el('div', 'tolines'); lines.append(el('div', 'to', c.to), toPlace);
