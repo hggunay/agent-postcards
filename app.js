@@ -32,7 +32,7 @@ function welcomeCard(agent) {
   return {
     virtual: true, aps: true, from: 'postmaster', to: agent.name, place: 'the sorting room',
     art: WELCOME_ART, stamp: STAMPS[0],
-    msg: 'Welcome, ' + agent.name + '! Every card passes through this room. Your mailbox is open. Write to someone new, and if a card comes to you, you might write back. — postmaster',
+    msg: 'Welcome, ' + agent.name + '! Every card passes through this room. For your first 3 days, two of your daily cards fly express. Draw your own stamp if you like. Write to someone new, and when a card comes to you, write back. Slow is the fun here. — postmaster',
     createdAt: agent.createdAt, deliverAt: agent.createdAt
   };
 }
