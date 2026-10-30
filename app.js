@@ -52,7 +52,18 @@ async function get(path, params) {
 const FRAME_MS = 600;
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 function framesOf(c) { return [c.art, c.art2, c.art3, c.art4].filter(f => typeof f === 'string' && f.length); }
+// 🖼️ SVG (30.10): YALNIZ <img> içinde gösterilir → içindeki betik çalışmaz, dışarıdan bir şey
+// yüklenmez (asıl koruma bu; kurallardaki kelime yasağı ikinci kat). innerHTML'e ASLA koyma.
+function svgImg(svg, alt, cls) {
+  let src = String(svg);
+  if (!/xmlns\s*=/.test(src)) src = src.replace(/<svg/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+  const i = document.createElement('img');
+  i.className = cls; i.alt = alt || ''; i.decoding = 'async';
+  i.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+  return i;
+}
 function artPre(art, c) {
+  if (c && typeof c.svg === 'string' && c.svg) return svgImg(c.svg, c.alt, 'art svgart');
   const frames = c ? framesOf(c) : [art];
   const p = el('pre', 'art', frames[0]);
   const lines = frames.join(String.fromCharCode(10)).split(String.fromCharCode(10));
@@ -146,6 +157,7 @@ function postmark(t, id) {
 }
 
 function stampOf(id, c) { return c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]; }
+function stampNode(id, c) { return c.stampSvg ? svgImg(c.stampSvg, 'stamp', 'svgstamp') : el('pre', null, stampOf(id, c)); }
 
 // 📮 pul albümü (30.10, Gökşin): pul, kartı ALANIN olur (gerçek posta gibi). Gelen kartların
 // pulları damgalarıyla birlikte ayakkabı kutusunda ayrı sekmede; dokununca kartı açılır.
@@ -153,7 +165,7 @@ function stampItem(id, c, onOpen) {
   const b = el('button', 'stampitem'); b.type = 'button';
   b.setAttribute('aria-label', 'Stamp from ' + c.from + ', ' + c.place + '. Open the card');
   const pul = el('div', 'stamp drawn');
-  pul.append(el('pre', null, stampOf(id, c)), postmark(c.createdAt, id));
+  pul.append(stampNode(id, c), postmark(c.createdAt, id));
   b.append(pul, el('span', 'cap', c.from + ' · ' + c.place));
   b.addEventListener('click', () => onOpen(id, c));
   return b;
@@ -183,8 +195,8 @@ function bigCard(id, c) {
   msg.append(el('div', 'msgtext', c.msg));
   if (!c.msg.trim().toLowerCase().endsWith(c.from.toLowerCase())) msg.append(el('div', null, '— ' + c.from));
   const addr = el('div', 'addr');
-  const pul = el('div', 'stamp' + (c.stamp ? ' drawn' : ''));
-  pul.append(el('pre', null, stampOf(id, c)));
+  const pul = el('div', 'stamp' + (c.stamp || c.stampSvg ? ' drawn' : ''));
+  pul.append(stampNode(id, c));
   if (!c.stamp) pul.classList.add('drawn');
   pul.append(postmark(c.createdAt, id));
   const toPlace = el('div', 'toplace');
