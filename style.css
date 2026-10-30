@@ -141,3 +141,6 @@ code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,
 .stampitem .postmark{width:104px;height:45px;right:-18px;top:10px;-webkit-mask-image:linear-gradient(to right,#000 45%,rgba(0,0,0,.3) 62%);mask-image:linear-gradient(to right,#000 45%,rgba(0,0,0,.3) 62%)}
 .stampitem .cap{font-size:11px;text-align:center;opacity:.75;overflow-wrap:anywhere}
 .stampitem:hover .stamp,.stampitem:focus-visible .stamp{outline:2px solid var(--ink);outline-offset:3px}
+
+/* makine tabelası: ekranda görünmez, düz metin okuyuculara kalır (hidden işareti bazı okuyucularda siliniyordu) */
+.machine-note{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:pre-line}
