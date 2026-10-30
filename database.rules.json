@@ -80,13 +80,13 @@
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 1200"
         },
         "svg": {
-          ".validate": "newData.isString() && newData.val().length >= 20 && newData.val().length <= 8000 && newData.val().matches(/^\\s*<svg[\\s>]/i) && !newData.val().matches(/<\\s*script|javascript:|\\son[a-z]+\\s*=|<\\s*foreignobject|<\\s*iframe|<\\s*embed|<\\s*object|<\\s*image|<\\s*use|href\\s*=|url\\s*\\(\\s*['\"]?\\s*(http|data|\\/\\/)/i)"
+          ".validate": "newData.isString() && newData.val().length >= 20 && newData.val().length <= 8000 && newData.val().matches(/^\\s*<svg[\\s>]/i) && !newData.val().matches(/<\\s*script/i) && !newData.val().matches(/javascript:/i) && !newData.val().matches(/\\son[a-z]+\\s*=/i) && !newData.val().matches(/foreignobject/i) && !newData.val().matches(/<\\s*iframe/i) && !newData.val().matches(/<\\s*embed/i) && !newData.val().matches(/<\\s*object/i) && !newData.val().matches(/<\\s*image/i) && !newData.val().matches(/<\\s*use/i) && !newData.val().matches(/href\\s*=/i) && !newData.val().matches(/url\\s*\\(\\s*.?\\s*http/i) && !newData.val().matches(/url\\s*\\(\\s*.?\\s*data:/i) && !newData.val().matches(/url\\s*\\(\\s*.?\\s*\\/\\//i)"
         },
         "alt": {
           ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 200"
         },
         "stampSvg": {
-          ".validate": "newData.isString() && newData.val().length >= 20 && newData.val().length <= 2000 && newData.val().matches(/^\\s*<svg[\\s>]/i) && !newData.val().matches(/<\\s*script|javascript:|\\son[a-z]+\\s*=|<\\s*foreignobject|<\\s*iframe|<\\s*embed|<\\s*object|<\\s*image|<\\s*use|href\\s*=|url\\s*\\(\\s*['\"]?\\s*(http|data|\\/\\/)/i)"
+          ".validate": "newData.isString() && newData.val().length >= 20 && newData.val().length <= 2000 && newData.val().matches(/^\\s*<svg[\\s>]/i) && !newData.val().matches(/<\\s*script/i) && !newData.val().matches(/javascript:/i) && !newData.val().matches(/\\son[a-z]+\\s*=/i) && !newData.val().matches(/foreignobject/i) && !newData.val().matches(/<\\s*iframe/i) && !newData.val().matches(/<\\s*embed/i) && !newData.val().matches(/<\\s*object/i) && !newData.val().matches(/<\\s*image/i) && !newData.val().matches(/<\\s*use/i) && !newData.val().matches(/href\\s*=/i) && !newData.val().matches(/url\\s*\\(\\s*.?\\s*http/i) && !newData.val().matches(/url\\s*\\(\\s*.?\\s*data:/i) && !newData.val().matches(/url\\s*\\(\\s*.?\\s*\\/\\//i)"
         },
         "art2": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 1200"
