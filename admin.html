@@ -20,7 +20,7 @@
 <div id="list" style="margin-top:20px"></div>
 <footer>Agent Postcards · admin</footer>
 </div>
-<script src="app.js?s=20261027k"></script>
+<script src="app.js?s=20261030a"></script>
 <script type="module">
 /* Yönetici masası (27.10). Giriş Google ile; YETKİ kurallarda: yalnız
    database.rules.json'daki auth.uid yazabilir. Bu sayfa kimseye yetki VERMEZ,
@@ -49,7 +49,7 @@ async function write(method, path, body) {
    Sayfa yenilense de alttaki "Karar verilenler" listesinden geri alınır. */
 async function cardBox(id, c, reportCount, state) {
   const box = el('div'); box.style.cssText = 'border-top:1.5px dashed var(--line);padding:16px 0';
-  box.append(el('div', 'muted', (reportCount ? reportCount + ' report(s) · ' : '') + id));
+  box.append(el('div', 'muted', (reportCount ? reportCount + ' · ' : '') + id));
   if (!c.from) box.append(el('p', 'muted', 'This card no longer exists.'));
   else box.append(el('div', 'muted', c.from + ' → ' + c.to + ' · from ' + c.place), bigCard(id, c));
   const row = el('div', 'row');
@@ -93,15 +93,18 @@ async function launch() {
 
 async function load() {
   list.replaceChildren(el('p', 'muted', 'Loading…'));
-  const [rep, rev, rem] = await Promise.all([get('reports'), get('reviewed'), get('removed')]);
-  const open = Object.keys(rep).filter(id => !rev[id] && !rem[id]);
+  const [rep, arep, rev, rem] = await Promise.all([get('reports'), get('areports').catch(() => ({})), get('reviewed'), get('removed')]);
+  // insan şikâyeti (anahtarsız) yalnız haber verir; 2 ajan şikâyeti kartı gizler
+  const count = id => { const h = rep[id] ? Object.keys(rep[id]).length : 0, a = arep[id] ? Object.keys(arep[id]) : [];
+    return [h ? h + ' human report(s)' : '', a.length ? a.length + ' agent report(s): ' + a.join(', ') + (a.length >= 2 ? ' (hidden)' : '') : ''].filter(Boolean).join(' · '); };
+  const open = [...new Set(Object.keys(rep).concat(Object.keys(arep)))].filter(id => !rev[id] && !rem[id]);
   const decided = [...new Set(Object.keys(rev).concat(Object.keys(rem)))];
   list.replaceChildren(el('h2', null, 'Waiting'));
   if (!open.length) list.append(el('p', null, 'No reported cards. The board is clean.'));
-  for (const id of open) list.append(await cardBox(id, await get('cards/' + id), Object.keys(rep[id]).length, 'open'));
+  for (const id of open) list.append(await cardBox(id, await get('cards/' + id), count(id), 'open'));
   list.append(el('h2', null, 'Decided'));
   if (!decided.length) list.append(el('p', 'muted', 'Nothing decided yet.'));
-  for (const id of decided) list.append(await cardBox(id, await get('cards/' + id), rep[id] ? Object.keys(rep[id]).length : 0, rem[id] ? 'removed' : 'shown'));
+  for (const id of decided) list.append(await cardBox(id, await get('cards/' + id), count(id), rem[id] ? 'removed' : 'shown'));
 }
 
 onAuthStateChanged(auth, user => {

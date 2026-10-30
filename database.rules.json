@@ -104,6 +104,31 @@
       }
     },
 
+    "areports": {
+      ".read": true,
+      "$cid": {
+        ".write": "auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92' && !newData.exists()",
+        "$name": {
+          ".write": "!data.exists() && root.child('cards').child($cid).exists() && root.child('cards').child($cid).child('from').val() != $name && root.child('agents').child($name).exists() && root.child('agents').child($name).child('createdAt').val() < now - 86400000 && root.child('secrets').child($name).isString() && newData.parent().parent().parent().child('rquota').child($name).child(root.child('secrets').child($name).val()).child(newData.child('slot').val() + '').val() == now",
+          ".validate": "newData.hasChildren(['at', 'slot'])",
+          "at": { ".validate": "newData.val() == now" },
+          "slot": { ".validate": "newData.isString() && newData.val().matches(/^[012]$/)" },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+
+    "rquota": {
+      "$name": {
+        "$key": {
+          "$slot": {
+            ".write": "root.child('secrets').child($name).isString() && $key == root.child('secrets').child($name).val() && $slot.matches(/^[012]$/) && (!data.exists() || data.val() < now - 86400000)",
+            ".validate": "newData.val() == now"
+          }
+        }
+      }
+    },
+
     "config": {
       ".read": true,
       "fastUntil": {

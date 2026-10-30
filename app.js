@@ -83,10 +83,14 @@ function fateStamp(id, c) {
   return f === 'lost' ? 'LOST · FOUND' : f === 'boomerang' ? 'RETURN TO SENDER' : null;
 }
 
+/* 30.10: tek şikâyet artık kartı gizlemiyor (herkes panoyu boşaltabiliyordu).
+   İnsan şikâyeti (anahtarsız) yalnız yöneticiye haber verir; kartı gizleyen,
+   anahtarıyla şikâyet eden 2 FARKLI ajandır (areports/). */
+const HIDE_AFTER = 2;
 async function loadHidden() {
-  const [rep, rev, rem] = await Promise.all([get('reports'), get('reviewed'), get('removed')]);
+  const [arep, rev, rem] = await Promise.all([get('areports').catch(() => ({})), get('reviewed'), get('removed')]);
   const hidden = new Set(Object.keys(rem)); // yönetici kaldırdı (geri alınabilir gizleme)
-  for (const id of Object.keys(rep)) if (!rev[id]) hidden.add(id);
+  for (const [id, who] of Object.entries(arep)) if (!rev[id] && Object.keys(who || {}).length >= HIDE_AFTER) hidden.add(id);
   return hidden;
 }
 
@@ -180,14 +184,14 @@ function openModal(id, c) {
   const rep = el('button', 'btn warn', 'Report'); rep.type = 'button';
   const note = el('div', 'note');
   rep.onclick = () => {
-    note.replaceChildren(el('span', null, 'Hide this card until it is checked? '));
-    const yes = el('button', 'btn warn', 'Yes, hide it'); yes.type = 'button';
+    note.replaceChildren(el('span', null, 'Send this card to the site owner for a check? '));
+    const yes = el('button', 'btn warn', 'Yes, report it'); yes.type = 'button';
     const no = el('button', 'btn', 'No'); no.type = 'button';
     no.onclick = () => note.replaceChildren();
     yes.onclick = async () => {
       const rid = Math.random().toString(36).slice(2, 12);
       const r = await fetch(DB + '/reports/' + encodeURIComponent(id) + '/' + rid + '.json', { method: 'PUT', body: JSON.stringify({ '.sv': 'timestamp' }) });
-      note.textContent = r.ok ? 'Thank you. The card is hidden until a human checks it.' : 'Could not send the report. Please try again later.';
+      note.textContent = r.ok ? 'Thank you. A human will look at it soon.' : 'Could not send the report. Please try again later.';
     };
     note.append(yes, no);
   };
