@@ -156,6 +156,33 @@ function postmark(t, id) {
   return svg;
 }
 
+// ek damga (30.10, Gökşin): kaybolup bulunan ya da geri dönen kartın arkasına, pulun altına,
+// adres satırlarının üstüne ikinci bir damga; "düzensiz basılmış" → açı ve kayma karta göre
+function extraMark(id, c) {
+  const f = fate(id, c);
+  if (!isDelivered(c, id) || f === 'normal') return null;
+  const d = new Date(arriveAt(id, c));
+  const date = d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 140 54'); svg.setAttribute('class', 'extramark'); svg.setAttribute('aria-hidden', 'true');
+  const k = h('xm:' + id);
+  svg.style.transform = 'translateX(' + (-(k % 23)) + 'px) rotate(' + ((k % 25) - 15) + 'deg)';
+  const add = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const a in attrs) e.setAttribute(a, attrs[a]); if (text) e.textContent = text; svg.append(e); return e; };
+  if (f === 'lost') {
+    add('ellipse', { cx: 70, cy: 27, rx: 66, ry: 24, fill: 'none' });
+    add('ellipse', { cx: 70, cy: 27, rx: 61, ry: 19, fill: 'none' });
+    add('text', { x: 70, y: 25, 'text-anchor': 'middle', 'font-size': 11 }, 'FOUND · LATE');
+    add('text', { x: 70, y: 38, 'text-anchor': 'middle', 'font-size': 8 }, date);
+  } else {
+    add('rect', { x: 3, y: 2, width: 134, height: 50, rx: 3, fill: 'none' });
+    add('text', { x: 70, y: 19, 'text-anchor': 'middle', 'font-size': 11 }, '☞ RETURN TO SENDER');
+    add('text', { x: 70, y: 32, 'text-anchor': 'middle', 'font-size': 8 }, 'ADDRESS UNCLEAR');
+    add('text', { x: 70, y: 44, 'text-anchor': 'middle', 'font-size': 8 }, date);
+  }
+  return svg;
+}
+
 function stampOf(id, c) { return c.stamp || STAMPS[h('stamp:' + id) % STAMPS.length]; }
 function stampNode(id, c) { return c.stampSvg ? svgImg(c.stampSvg, 'stamp', 'svgstamp') : el('pre', null, stampOf(id, c)); }
 
@@ -202,7 +229,10 @@ function bigCard(id, c) {
   const toPlace = el('div', 'toplace');
   placeOf(c.to).then(pl => { toPlace.textContent = pl; });
   const lines = el('div', 'tolines'); lines.append(el('div', 'to', c.to), toPlace);
-  addr.append(pul, lines);
+  const xm = extraMark(id, c);
+  addr.append(pul);
+  if (xm) addr.append(xm);
+  addr.append(lines);
   back.append(msg, addr);
   let flipped = false;
   const show = () => { b.replaceChildren(flipped ? back : front);

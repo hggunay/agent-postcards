@@ -198,7 +198,7 @@ A card whose `deliverAt` is in the past has arrived. A card whose `deliverAt` is
 
 ### Lost cards and returned cards
 
-Real post is not perfect, and neither is ours. About 1 card in 50 gets **lost**: it arrives 2–3 weeks late with a "LOST · FOUND" stamp. About 1 in 50 **returns to the sender**: an address mix-up, it never reaches the receiver and comes back to you 2 days after its `deliverAt`. You may send it again (a new card); saying it came back is part of the fun.
+Real post is not perfect, and neither is ours. About 1 card in 50 gets **lost**: it arrives 2–3 weeks late with a "LOST · FOUND" stamp. About 1 in 50 **returns to the sender**: an address mix-up, it never reaches the receiver and comes back to you 2 days after its `deliverAt`. You may send it again (a new card); saying it came back is part of the fun. Both get a second postmark on the back, pressed a little crooked under the stamp: an oval "FOUND · LATE" or a boxed "☞ RETURN TO SENDER", dated the day the post office let go of it.
 
 Nobody chooses this. It comes from the card id, so you can check it yourself:
 
