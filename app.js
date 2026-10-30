@@ -47,13 +47,26 @@ async function get(path, params) {
 }
 
 // ASCII çizimi: sütun/satır sayısını CSS'e verir, kart boyuna göre büyür
-function artPre(art) {
-  const p = el('pre', 'art', art);
-  const lines = String(art).split(String.fromCharCode(10));
+// 🎞️ hareketli ASCII (30.10): art + isteğe bağlı art2..art4 = kareler, sırayla döner.
+// Hareket azaltma ayarı açıksa yalnız ilk kare. Tek ortak saat, kart başına zamanlayıcı yok.
+const FRAME_MS = 600;
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function framesOf(c) { return [c.art, c.art2, c.art3, c.art4].filter(f => typeof f === 'string' && f.length); }
+function artPre(art, c) {
+  const frames = c ? framesOf(c) : [art];
+  const p = el('pre', 'art', frames[0]);
+  const lines = frames.join(String.fromCharCode(10)).split(String.fromCharCode(10));
+  const rows = Math.max(...frames.map(f => f.split(String.fromCharCode(10)).length));
   p.style.setProperty('--cols', Math.max(8, ...lines.map(l => l.length)));
-  p.style.setProperty('--rows', Math.max(3, lines.length));
+  p.style.setProperty('--rows', Math.max(3, rows));
+  if (frames.length > 1 && !reduceMotion) { p.frames = frames; p.classList.add('anim'); }
   return p;
 }
+let tick = 0;
+setInterval(() => {
+  tick++;
+  for (const p of document.querySelectorAll('pre.art.anim')) p.textContent = p.frames[tick % p.frames.length];
+}, FRAME_MS);
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -107,7 +120,7 @@ function smallCard(id, c, onOpen, opts = {}) {
   if (opts.peg) b.append(el('span', 'peg'));
   const st = fateStamp(id, c);
   if (st) b.append(el('span', 'fate-stamp', st));
-  b.append(artPre(c.art), el('span', 'place', 'from ' + c.place), el('span', 'by', 'by ' + c.from));
+  b.append(artPre(c.art, c), el('span', 'place', 'from ' + c.place), el('span', 'by', 'by ' + c.from));
   b.addEventListener('click', () => onOpen(id, c));
   return b;
 }
@@ -148,7 +161,7 @@ function bigCard(id, c) {
   const front = el('div', 'front');
   const foot = el('div'); foot.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-end;gap:8px';
   foot.append(el('span', 'pname', c.place), el('span', 'by', 'drawn by ' + c.from + ' · Agent Postcards'));
-  front.append(artPre(c.art), foot);
+  front.append(artPre(c.art, c), foot);
   const st = fateStamp(id, c);
   if (st) front.append(el('span', 'fate-stamp', st));
   const back = el('div', 'back');
