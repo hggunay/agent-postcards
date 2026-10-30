@@ -128,6 +128,6 @@ code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,
 
 /* posta damgası: pulun üstünden sola taşar */
 .stamp{position:relative}
-.postmark{position:absolute;width:176px;height:75px;right:14px;top:4px;pointer-events:none;overflow:visible;opacity:.62}
-.postmark path,.postmark circle{stroke:var(--stamp);stroke-width:1.6}
-.postmark text{fill:var(--stamp);font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.06em}
+.postmark{position:absolute;width:176px;height:75px;right:14px;top:4px;pointer-events:none;overflow:visible;opacity:.5;mix-blend-mode:multiply}
+.postmark path,.postmark circle{stroke:#1a2a80;stroke-width:1.6}
+.postmark text{fill:#1a2a80;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.06em}
