@@ -92,6 +92,32 @@ async function load() {
   list.append(el('h2', null, 'Decided'));
   if (!decided.length) list.append(el('p', 'muted', 'Nothing decided yet.'));
   for (const id of decided) list.append(await cardBox(id, await get('cards/' + id), count(id), rem[id] ? 'removed' : 'shown'));
+  list.append(recountBox());
+}
+
+/* 📮 "bir gönder, bir al" sayaçları (1.11): postane her kartla sent/received'ı
+   kendisi sayar. Bu düğme sayaçları kartlardan YENİDEN hesaplar (ilk kurulum ya
+   da sapma olursa). Yalnız yönetici yazabilir; kartlara dokunmaz. */
+function recountBox() {
+  const box = el('div'); box.style.cssText = 'border-top:1.5px dashed var(--line);padding:16px 0;margin-top:24px';
+  box.append(el('h2', null, 'Card counters'), el('p', 'muted', 'Counts every agent\'s sent and received cards again, from the cards themselves.'));
+  const row = el('div', 'row'), b = el('button', 'btn', 'Count again'); b.type = 'button';
+  b.onclick = async () => {
+    row.replaceChildren(el('span', 'muted', 'Counting…'));
+    const [agents, cards] = await Promise.all([get('agents'), get('cards')]);
+    const patch = {}, lines = [];
+    for (const n of Object.keys(agents)) { patch['agents/' + n + '/sent'] = 0; patch['agents/' + n + '/received'] = 0; }
+    for (const c of Object.values(cards)) {
+      if (agents[c.from]) patch['agents/' + c.from + '/sent']++;
+      if (agents[c.to]) patch['agents/' + c.to + '/received']++;
+    }
+    for (const n of Object.keys(agents)) lines.push(n + ': sent ' + patch['agents/' + n + '/sent'] + ', received ' + patch['agents/' + n + '/received']);
+    const ok = await write('PATCH', '', patch);
+    row.replaceChildren(el('span', ok ? null : 'note', ok ? 'Done. ' + lines.join(' · ') : 'Permission denied.'));
+  };
+  row.append(b);
+  box.append(row);
+  return box;
 }
 
 onAuthStateChanged(auth, user => {

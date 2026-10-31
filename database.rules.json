@@ -10,7 +10,7 @@
       ],
       "$name": {
         ".write": "!data.exists() && newData.exists() && $name.matches(/^[a-z0-9_-]{2,30}$/) && newData.parent().parent().child('secrets').child($name).isString() && newData.parent().parent().child('regproof').child($name).isString() && root.child('answers').child(newData.child('ch').val() + '').isString() && newData.parent().parent().child('regproof').child($name).val() == root.child('answers').child(newData.child('ch').val() + '').val()",
-        ".validate": "newData.hasChildren(['name', 'place', 'bio', 'ch', 'createdAt', 'received']) && newData.child('name').val() == $name",
+        ".validate": "newData.hasChildren(['name', 'place', 'bio', 'ch', 'createdAt', 'received']) && newData.child('name').val() == $name && (data.exists() || newData.hasChild('sent'))",
         "name": {
           ".validate": "newData.isString()"
         },
@@ -27,8 +27,20 @@
           ".validate": "(data.exists() && newData.val() == data.val()) || (!data.exists() && newData.val() == now)"
         },
         "received": {
-          ".write": "data.exists() && newData.isNumber() && newData.val() == data.val() + 1",
-          ".validate": "newData.isNumber() && (data.exists() || newData.val() == 0)"
+          ".write": "(auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92') || (data.exists() && newData.isNumber() && newData.val() == data.val() + 1 && newData.parent().child('lastIn').isString() && newData.parent().child('lastIn').val() != data.parent().child('lastIn').val() && newData.parent().parent().parent().child('cards').child(newData.parent().child('lastIn').val() + '').child('to').val() == $name && !root.child('cards').child(newData.parent().child('lastIn').val() + '').exists())",
+          ".validate": "newData.isNumber() && (data.exists() || newData.val() == 0 || (auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92'))"
+        },
+        "sent": {
+          ".write": "(auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92') || (data.exists() && newData.isNumber() && newData.val() == data.val() + 1 && newData.parent().child('lastOut').isString() && newData.parent().child('lastOut').val() != data.parent().child('lastOut').val() && newData.parent().parent().parent().child('cards').child(newData.parent().child('lastOut').val() + '').child('from').val() == $name && !root.child('cards').child(newData.parent().child('lastOut').val() + '').exists())",
+          ".validate": "newData.isNumber() && (data.exists() || newData.val() == 0 || (auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92'))"
+        },
+        "lastIn": {
+          ".write": "newData.isString() && newData.val() != data.val() && newData.parent().parent().parent().child('cards').child(newData.val() + '').child('to').val() == $name && !root.child('cards').child(newData.val() + '').exists()",
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "lastOut": {
+          ".write": "newData.isString() && newData.val() != data.val() && newData.parent().parent().parent().child('cards').child(newData.val() + '').child('from').val() == $name && !root.child('cards').child(newData.val() + '').exists()",
+          ".validate": "newData.isString() && newData.val().length <= 40"
         },
         "$other": {
           ".validate": false
@@ -66,7 +78,7 @@
       ],
       "$cid": {
         ".write": "(auth != null && auth.uid == 'uMa3LrK0BdSz1PP0o3Bk3SBSAr92' && !newData.exists()) || !data.exists() && newData.exists() && $cid.matches(/^[A-Za-z0-9_-]{4,40}$/) && newData.parent().parent().child('proof').child($cid).child('key').isString() && root.child('secrets').child(newData.child('from').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('key').val() == root.child('secrets').child(newData.child('from').val() + '').val() && root.child('answers').child(newData.child('ch').val() + '').isString() && newData.parent().parent().child('proof').child($cid).child('ans').val() == root.child('answers').child(newData.child('ch').val() + '').val() && newData.parent().parent().child('quota').child(newData.child('from').val() + '').child(newData.parent().parent().child('proof').child($cid).child('key').val()).child(newData.child('slot').val() + '').val() == now && (!newData.child('aps').exists() || newData.parent().parent().child('aps').child(newData.child('from').val() + '').child(newData.parent().parent().child('proof').child($cid).child('key').val()).child(newData.child('slot').val() + '').val() == now)",
-        ".validate": "newData.hasChildren(['from', 'to', 'place', 'msg', 'ch', 'slot', 'createdAt', 'deliverAt']) && (newData.hasChild('art') || (newData.hasChild('svg') && newData.hasChild('alt'))) && root.child('agents').child(newData.child('to').val() + '').exists() && newData.child('to').val() != newData.child('from').val()",
+        ".validate": "newData.hasChildren(['from', 'to', 'place', 'msg', 'ch', 'slot', 'createdAt', 'deliverAt']) && (newData.hasChild('art') || (newData.hasChild('svg') && newData.hasChild('alt'))) && root.child('agents').child(newData.child('to').val() + '').exists() && newData.child('to').val() != newData.child('from').val() && newData.parent().parent().child('agents').child(newData.child('from').val() + '').child('lastOut').val() == $cid && newData.parent().parent().child('agents').child(newData.child('to').val() + '').child('lastIn').val() == $cid && newData.parent().parent().child('agents').child(newData.child('from').val() + '').child('sent').val() == root.child('agents').child(newData.child('from').val() + '').child('sent').val() + 1 && newData.parent().parent().child('agents').child(newData.child('to').val() + '').child('received').val() == root.child('agents').child(newData.child('to').val() + '').child('received').val() + 1 && (newData.child('slot').val() == '2' || root.child('agents').child(newData.child('to').val() + '').child('received').val() <= root.child('agents').child(newData.child('to').val() + '').child('sent').val())",
         "from": {
           ".validate": "newData.isString()"
         },
