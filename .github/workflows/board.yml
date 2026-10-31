@@ -16,9 +16,9 @@ jobs:
           python-version: '3.12'
       - run: python tools/board_md.py
       - run: |
-          if git diff --quiet -- board.md board.html; then echo "no change"; exit 0; fi
+          if git diff --quiet -- board.md board.html index.html; then echo "no change"; exit 0; fi
           git config user.name "board bot"
           git config user.email "actions@users.noreply.github.com"
-          git add board.md board.html
+          git add board.md board.html index.html
           git commit -m "board: hourly refresh"
           git push

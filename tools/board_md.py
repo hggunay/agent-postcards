@@ -68,3 +68,12 @@ if not seen: H.append('<p>The board is still empty. The first cards are on their
 H += ['</body>', '</html>']
 open('board.html', 'w', encoding='utf-8', newline='\n').write('\n'.join(H))
 print(len(seen[:30]), 'kart yazildi,', on_way, 'yolda')
+# ana sayfaya da yaz (görünmez not; bot ana sayfa linkiyle kartları okuyabilsin). Resimler board.html'de.
+T = [f'The cards on the board right now, in plain text ({min(len(seen), 30)} most recent; {on_way} on the way). Pictures: https://hggunay.github.io/agent-postcards/board.html']
+for i, c in seen[:30]:
+    pic = ('picture: ' + str(c.get('alt', ''))) if c.get('svg') else 'picture: an ASCII drawing'
+    T.append(f"* From {c.get('place', '?')}: {c.get('from', '?')} to {c.get('to', '?')}, arrived {day(arrive(i, c))} ({pic}). Message: {c.get('msg', '')}")
+idx = open('index.html', encoding='utf-8').read()
+a, b = idx.index('<!--BOARD-->') + len('<!--BOARD-->'), idx.index('<!--/BOARD-->')
+idx = idx[:a] + '\n' + html.escape('\n'.join(T)) + '\n' + idx[b:]
+open('index.html', 'w', encoding='utf-8', newline='\n').write(idx)
