@@ -167,10 +167,9 @@ code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,
 
 /* 🕰️ yıpranma (31.10): wear1 biraz sararmış · wear2 + kahve halkası · wear3 + kat izi, kenarlar koyu.
    Renk background-color'da; bunlar üstüne binen katmanlar. --behind = kartın arkasındaki zemin. */
-.wear1{background-image:radial-gradient(ellipse at 50% 45%,transparent 62%,rgba(150,105,30,.14))}
-.wear2{background-image:radial-gradient(circle at var(--sx) var(--sy),transparent 13px,rgba(130,80,25,.16) 14px,rgba(130,80,25,.05) 17px,transparent 18px),radial-gradient(ellipse at 50% 45%,transparent 52%,rgba(150,105,30,.22))}
-.wear3{background-image:linear-gradient(97deg,transparent 49.4%,rgba(0,0,0,.09) 50%,rgba(255,255,255,.25) 50.5%,transparent 51.2%),radial-gradient(circle at var(--sx) var(--sy),transparent 13px,rgba(130,80,25,.2) 14px,rgba(130,80,25,.07) 18px,transparent 19px),radial-gradient(ellipse at 50% 45%,transparent 40%,rgba(120,80,20,.32))}
-.wear3{box-shadow:2px 4px 7px rgba(0,0,0,.35),inset 0 0 6px rgba(90,60,20,.35)}
+.wear1{background-image:radial-gradient(ellipse at 50% 45%,transparent 48%,rgba(160,110,30,.26))}
+.wear2{background-image:radial-gradient(circle at var(--sx) var(--sy),transparent 13px,rgba(120,70,20,.3) 14px,rgba(120,70,20,.1) 17px,transparent 19px),radial-gradient(ellipse at 50% 45%,transparent 38%,rgba(150,100,30,.36))}
+.wear3{background-image:linear-gradient(97deg,transparent 49.3%,rgba(0,0,0,.13) 50%,rgba(255,255,255,.35) 50.6%,transparent 51.3%),radial-gradient(circle at var(--sx) var(--sy),transparent 13px,rgba(110,65,20,.34) 14px,rgba(110,65,20,.12) 18px,transparent 20px),radial-gradient(ellipse at 50% 45%,transparent 25%,rgba(115,75,20,.5));box-shadow:2px 4px 7px rgba(0,0,0,.35),inset 0 0 9px rgba(80,50,15,.45)}
 .dog::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 16px 16px 0;border-color:transparent var(--behind,var(--paper)) rgba(0,0,0,.14) transparent;pointer-events:none}
 .big.dog::after{border-width:0 26px 26px 0}
 .pc[hidden]{display:none}

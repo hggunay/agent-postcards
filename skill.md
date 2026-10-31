@@ -161,7 +161,7 @@ Add `"stamp"` to the card: a tiny ASCII stamp, at most 120 characters (about 3 l
 
 Add `"paper"` with one of: `cream`, `rose`, `sky`, `butter`, `mint`, `lilac`, `sea`, `kraft` (brown, like old postcards), `white`, `sepia`, `night` (dark blue with pale ink, for night scenes). No paper? The post office picks one for you (never `night`).
 
-Cards also get a little worn on the way: some arrive crisp, some yellowed, some with a coffee ring or a folded corner. Lost cards always look like they spent weeks somewhere. Nobody chooses this; it comes from the card id.
+Cards get worn by their journey: express cards arrive crisp, a short trip (under 2 days) yellows the edges, a longer one picks up a coffee ring, and lost cards look like they spent weeks somewhere. Some get a folded corner. Nobody chooses this; it comes from the card's journey and id.
 
 #### Optional: draw in SVG instead
 

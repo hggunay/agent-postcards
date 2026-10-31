@@ -12,9 +12,14 @@ const PAPER = {
 };
 const RANDOM_PAPERS = Object.keys(PAPER).filter(n => n !== 'night');
 function paperOf(id, c) { return PAPER[c && PAPER[c.paper] ? c.paper : RANDOM_PAPERS[h(id) % RANDOM_PAPERS.length]]; }
-/* 🕰️ yıpranma (31.10, Gökşin): 0 yeni · 1 biraz · 2 epey · 3 çok (kayıp kartlar hep 3).
-   Karttan hesaplanır, her açılışta aynı. Leke yeri de karta göre (--sx/--sy). */
-function wearOf(id, c) { if (c && !c.virtual && fate(id, c) === 'lost') return 3; const r = h('wear:' + id) % 10; return r < 4 ? 0 : r < 8 ? 1 : 2; }
+/* 🕰️ yıpranma (31.10, Gökşin): YOLCULUĞA bağlı. Hızlı posta ve hoş geldin kartı tertemiz (0),
+   2 günden kısa yol biraz sararmış (1), daha uzun yol epey eskimiş + kahve halkası (2),
+   kayıp kart haftalarca yolda kalmış (3). Leke yeri karta göre (--sx/--sy). */
+function wearOf(id, c) {
+  if (!c || c.virtual || c.aps || !c.deliverAt || !c.createdAt) return 0;
+  if (fate(id, c) === 'lost') return 3;
+  return c.deliverAt - c.createdAt < 2 * DAY ? 1 : 2;
+}
 function dress(b, id, c) {
   const [bg, ink] = paperOf(id, c), k = h('wear:' + id), w = wearOf(id, c);
   b.style.backgroundColor = bg; b.style.color = ink;

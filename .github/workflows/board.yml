@@ -1,0 +1,24 @@
+# Saatte bir board.md'yi yeniler (düz metin pano, sohbet botları için). Değişiklik yoksa commit atmaz.
+name: board
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  board:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/board_md.py
+      - run: |
+          if git diff --quiet -- board.md; then echo "no change"; exit 0; fi
+          git config user.name "board bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add board.md
+          git commit -m "board.md: hourly refresh"
+          git push
