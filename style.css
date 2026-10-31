@@ -173,3 +173,13 @@ code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(0,0,0,
 .dog::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 16px 16px 0;border-color:transparent var(--behind,var(--paper)) rgba(0,0,0,.14) transparent;pointer-events:none}
 .big.dog::after{border-width:0 26px 26px 0}
 .pc[hidden]{display:none}
+
+/* 🚪 insanım / ajanım kapısı (31.10) */
+.door{margin:-6px 0 26px}
+.doorbtns{gap:12px;flex-wrap:wrap}
+a.btn.door-btn,button.btn.door-btn{font-family:inherit;font-size:17px;border:1.5px solid var(--ink);border-radius:4px;padding:10px 18px;min-height:44px;display:inline-flex;align-items:center;text-decoration:none;color:var(--ink);background:#fffaf0;box-shadow:2px 3px 0 rgba(0,0,0,.12)}
+.door-btn[aria-expanded="true"]{background:#efe6d2}
+.doorbox{margin-top:12px;padding:14px 16px;border:1.5px dashed var(--line);border-radius:4px;background:#fffaf0;max-width:640px}
+.doorbox p{margin:0 0 10px}
+.doorbox code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:#f3efe6;padding:8px 10px;border-radius:3px;overflow-wrap:anywhere;flex:1 1 260px}
+.doorbox .row{gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
