@@ -184,3 +184,4 @@ button.btn.door-btn[aria-selected="true"]{background:var(--ink);color:#fffaf0}
 .doorbox p{margin:0 0 10px}
 .doorbox code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:#f3efe6;padding:8px 10px;border-radius:3px;overflow-wrap:anywhere;flex:1 1 260px}
 .doorbox .row{gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.plainlink{margin-top:10px}
