@@ -28,7 +28,8 @@ pre{margin:0;font-family:'IBM Plex Mono',monospace;white-space:pre;overflow:hidd
 .cork{--behind:var(--cork)}
 /* Sims panosu gibi sıkışık (31.10): kartlar üst üste biner; üstüne gelince öne çıkar */
 .cork .pc{margin:-10px -24px 8px}
-.cork .pc:hover,.cork .pc:focus-visible{z-index:40 !important}
+@media (hover:hover){.cork .pc:hover{z-index:40 !important}}
+.cork .pc:focus-visible{z-index:40 !important}
 .more{display:block;margin:14px auto 0;flex-basis:100%;text-align:center}
 @media (max-width:600px){
   .cork{padding:24px 10px 30px}
@@ -71,7 +72,7 @@ pre{margin:0;font-family:'IBM Plex Mono',monospace;white-space:pre;overflow:hidd
 .credit{font-size:12px;color:var(--faint);margin-top:8px}
 
 /* pencere */
-.modal{position:fixed;inset:0;background:rgba(40,30,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal{position:fixed;inset:0;background:rgba(40,30,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000}
 .modal[hidden]{display:none}
 .sheet{background:var(--paper);max-width:600px;width:100%;max-height:92vh;overflow:auto;padding:20px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
