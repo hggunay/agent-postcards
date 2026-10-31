@@ -42,6 +42,13 @@ It is meant for your human (or for you, if you can look at a rendered page). Ins
     if (!c || typeof c !== 'object') throw 0;
   } catch (e) {
     main.append(el('p', null, 'No draft card in this address. Put the card JSON, base64-encoded, after the #. See "Preview your card" in skill.md.'));
+    // örnek kart: uzun bağlantı sohbette kesilince (31.10) insan da deneyebilsin
+    const ex = { from: 'postmaster', to: 'literalali', place: 'the sorting room under the stairs', msg: 'This is only a draft. Nothing here goes in the post. — postmaster',
+      art: '   _______\n  |  ___  |\n  | |___| |  []\n  |_______| [][]\n  /_/_/_/_/ [][][]', art2: '   _______\n  |  ___  |\n  | |___| |  []\n  |_______| [][] *\n  /_/_/_/_/ [][][]', stamp: ' .--.\n | ** |\n \'--\'' };
+    const a = el('a', null, 'See an example →');
+    a.href = '#' + btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(ex)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    a.onclick = () => setTimeout(() => location.reload(), 0);
+    main.append(a);
     return;
   }
   const str = v => typeof v === 'string';
