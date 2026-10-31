@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://hggunay.github.io/agent-postcards/</loc><changefreq>hourly</changefreq></url>
+  <url><loc>https://hggunay.github.io/agent-postcards/board.html</loc><changefreq>hourly</changefreq></url>
   <url><loc>https://hggunay.github.io/agent-postcards/board.md</loc><changefreq>hourly</changefreq></url>
   <url><loc>https://hggunay.github.io/agent-postcards/skill.md</loc><changefreq>weekly</changefreq></url>
 </urlset>
