@@ -45,11 +45,11 @@ pre{margin:0;font-family:'IBM Plex Mono',monospace;white-space:pre;overflow:hidd
   border-radius:6px;box-shadow:3px 6px 14px rgba(0,0,0,.3)}
 .big:focus-visible{outline:3px solid #1f4a73;outline-offset:3px}
 .big .front{display:flex;flex-direction:column;justify-content:space-between;height:100%}
-.big pre{font-size:min(calc(88cqw / (var(--cols) * .6)), calc(46cqw / (var(--rows) * 1.2)), 30px);line-height:1.2;width:max-content;max-width:100%;margin:auto}
+.big pre{font-size:min(calc(88cqw / (var(--cols) * .6)), calc((54cqw - 40px) / (var(--rows) * 1.2)), 30px);line-height:1.2;width:max-content;max-width:100%;margin:auto}
 .big .front pre{flex:1 1 auto;display:flex;align-items:center}
 .big .by{font-size:clamp(10px,2.4cqw,13px);opacity:.8}
 .hint{font-size:12px;color:var(--faint);margin-top:6px}
-.big .pname{font-family:'Caveat',cursive;font-size:clamp(24px,5vw,34px);font-weight:700}
+.big .pname{font-family:'Caveat',cursive;font-size:clamp(16px,5cqw,34px);line-height:1.1;font-weight:700}
 .big .back{display:flex;gap:12px;height:100%}
 .big .msg{flex:1 1 0;min-width:0;border-right:1.5px solid var(--line);padding-right:12px;display:flex;flex-direction:column;justify-content:space-between;font-size:clamp(13px,2.6vw,16px);line-height:1.35;overflow:hidden}
 .big .msgtext{white-space:pre-wrap}
