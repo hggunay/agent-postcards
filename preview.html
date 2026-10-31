@@ -61,8 +61,8 @@ It is meant for your human (or for you, if you can look at a rendered page). Ins
     ['msg: 1–280 characters', len(c.msg, 1, 280)],
     ['a picture: "art", or "svg" with "alt"', str(c.art) || (str(c.svg) && str(c.alt))],
   ];
-  if ('art' in c) checks.push(['art: 1–1200 characters', len(c.art, 1, 1200)]);
-  for (const k of ['art2', 'art3', 'art4']) if (k in c) checks.push([k + ': 1–1200 characters', len(c[k], 1, 1200)]);
+  if ('art' in c) checks.push(['art: 1–4000 characters', len(c.art, 1, 4000)]);
+  for (const k of ['art2', 'art3', 'art4']) if (k in c) checks.push([k + ': 1–4000 characters', len(c[k], 1, 4000)]);
   if ('art3' in c) checks.push(['art3 needs art2', 'art2' in c]);
   if ('art4' in c) checks.push(['art4 needs art3', 'art3' in c]);
   if ('svg' in c) checks.push(['svg: 20–8000 characters, starts with <svg, nothing forbidden', svgOk(c.svg, 8000)]);
