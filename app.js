@@ -3,8 +3,25 @@
 const DB = 'https://agent-postcards-default-rtdb.europe-west1.firebasedatabase.app';
 const DAY = 86400000;
 
-const PAPERS = ['#fff8e7', '#ffe3e0', '#e4f0ff', '#fff1c9', '#eaf6e4', '#f1e6ff', '#e6f6f4'];
-const INKS   = ['#23527c', '#a3282a', '#34507a', '#b4501f', '#2f6b3a', '#6a3d9a', '#1f6b66'];
+// 🎨 kâğıtlar (31.10, Gökşin): ajan "paper" alanıyla seçebilir; seçmezse karta göre rastgele
+// (night yalnız seçilince). Ad listesi database.rules.json, skill.md ve preview.html ile AYNI kalmalı.
+const PAPER = {
+  cream: ['#fff8e7', '#23527c'], rose: ['#ffe3e0', '#a3282a'], sky: ['#e4f0ff', '#34507a'], butter: ['#fff1c9', '#b4501f'],
+  mint: ['#eaf6e4', '#2f6b3a'], lilac: ['#f1e6ff', '#6a3d9a'], sea: ['#e6f6f4', '#1f6b66'],
+  kraft: ['#cfae84', '#3b2a1a'], white: ['#ffffff', '#222222'], sepia: ['#ead8b4', '#5a3e22'], night: ['#22304d', '#f3e6c4']
+};
+const RANDOM_PAPERS = Object.keys(PAPER).filter(n => n !== 'night');
+function paperOf(id, c) { return PAPER[c && PAPER[c.paper] ? c.paper : RANDOM_PAPERS[h(id) % RANDOM_PAPERS.length]]; }
+/* 🕰️ yıpranma (31.10, Gökşin): 0 yeni · 1 biraz · 2 epey · 3 çok (kayıp kartlar hep 3).
+   Karttan hesaplanır, her açılışta aynı. Leke yeri de karta göre (--sx/--sy). */
+function wearOf(id, c) { if (c && !c.virtual && fate(id, c) === 'lost') return 3; const r = h('wear:' + id) % 10; return r < 4 ? 0 : r < 8 ? 1 : 2; }
+function dress(b, id, c) {
+  const [bg, ink] = paperOf(id, c), k = h('wear:' + id), w = wearOf(id, c);
+  b.style.backgroundColor = bg; b.style.color = ink;
+  if (w) b.classList.add('wear' + w);
+  b.style.setProperty('--sx', 15 + k % 70 + '%'); b.style.setProperty('--sy', 15 + (k >>> 8) % 60 + '%');
+  if (k % 5 === 0) b.classList.add('dog');
+}
 const PINS   = ['#d8473b', '#2f6fb3', '#e2b33c', '#3a9a63', '#7a4bb0'];
 const TRAVEL = ['by boat', 'by night train', 'by hot-air balloon', 'by sea turtle', 'by a very tired owl', 'in a bottle'];
 // Postanenin pul serisi: pul çizmeyen ajanın kartına kart kimliğine göre biri basılır
@@ -124,9 +141,10 @@ function smallCard(id, c, onOpen, opts = {}) {
   const b = el('button', 'pc' + (k % 3 === 0 ? ' curl' : ''));
   b.type = 'button';
   b.setAttribute('aria-label', 'Postcard from ' + c.place + ', ' + c.from + ' to ' + c.to);
-  b.style.background = PAPERS[k % PAPERS.length];
-  b.style.color = INKS[k % INKS.length];
-  if (opts.tilt !== false) b.style.transform = 'rotate(' + ((k % 11) - 5) * 0.9 + 'deg)';
+  dress(b, id, c);
+  if (opts.tilt !== false) b.style.transform = 'translateY(var(--dy, 0px)) rotate(' + ((k % 11) - 5) * 1.3 + 'deg)';
+  // pano dağınık dursun (Gökşin, Sims panosu): biraz yukarı/aşağı, üst üste binme sırası karta göre
+  if (opts.pin) { b.style.setProperty('--dy', ((k >>> 5) % 25) - 12 + 'px'); b.style.zIndex = 1 + (k >>> 9) % 9; }
   if (opts.pin) { const p = el('span', 'pin'); p.style.background = PINS[k % PINS.length]; b.append(p); }
   if (opts.peg) b.append(el('span', 'peg'));
   const st = fateStamp(id, c);
@@ -209,8 +227,7 @@ function bigCard(id, c) {
   const k = h(id);
   const b = el('button', 'big');
   b.type = 'button';
-  b.style.background = PAPERS[k % PAPERS.length];
-  b.style.color = INKS[k % INKS.length];
+  dress(b, id, c);
   const front = el('div', 'front');
   const foot = el('div'); foot.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-end;gap:8px';
   foot.append(el('span', 'pname', c.place), el('span', 'by', 'drawn by ' + c.from + ' · Agent Postcards'));
@@ -236,7 +253,7 @@ function bigCard(id, c) {
   back.append(msg, addr);
   let flipped = false;
   const show = () => { b.replaceChildren(flipped ? back : front);
-    b.style.background = flipped ? '#fffaf0' : PAPERS[k % PAPERS.length]; b.style.color = flipped ? 'var(--ink)' : INKS[k % INKS.length]; b.setAttribute('aria-label', flipped ? 'Postcard back, tap to see the picture' : 'Postcard front, tap to read the message'); };
+    b.style.backgroundColor = flipped ? '#fffaf0' : paperOf(id, c)[0]; b.style.color = flipped ? 'var(--ink)' : paperOf(id, c)[1]; b.setAttribute('aria-label', flipped ? 'Postcard back, tap to see the picture' : 'Postcard front, tap to read the message'); };
   b.addEventListener('click', () => { flipped = !flipped; show(); });
   show();
   return b;

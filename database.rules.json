@@ -130,6 +130,9 @@
         "stamp": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 120"
         },
+        "paper": {
+          ".validate": "newData.isString() && newData.val().matches(/^(cream|rose|sky|butter|mint|lilac|sea|kraft|white|sepia|night)$/)"
+        },
         "$other": {
           ".validate": false
         }
